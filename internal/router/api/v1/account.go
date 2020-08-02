@@ -23,7 +23,3 @@ func Login(c *gin.Context) {
 		return
 	}
 }
-
-func LoginWithRedirect(c *gin.Context) {
-
-}
