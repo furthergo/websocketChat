@@ -26,7 +26,21 @@ func main() {
 	})
 	// routers
 	router.GET("/api/v1/login", api.Login)
-	router.POST("/api/v1/loginFromHTML", api.LoginWithRedirect)
+	router.Any("/api/v1/loginFromHTML", func(c *gin.Context) {
+		w := c.Writer
+		var u models.UserEntity
+		err := c.ShouldBind(&u)
+		if err != nil {
+			w.Write([]byte("sorry，user is not allowed"))
+		}
+		res, _ := u.Auth()
+		if !res {
+			w.Write([]byte("sorry，user is not allowed"))
+			return
+		}
+		c.Request.URL.Path = "/chat"
+		router.HandleContext(c)
+	})
 
 	wsS := models.NewWsChatServer()
 	router.GET("/ws/msg", wsS.MessageAPI)

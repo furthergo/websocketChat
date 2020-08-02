@@ -25,16 +25,5 @@ func Login(c *gin.Context) {
 }
 
 func LoginWithRedirect(c *gin.Context) {
-	w := c.Writer
-	var u models.UserEntity
-	err := c.ShouldBind(&u)
-	if err != nil {
-		w.Write([]byte("sorry，user is not allowed"))
-	}
-	res, _ := u.Auth()
-	if !res {
-		w.Write([]byte("sorry，user is not allowed"))
-		return
-	}
-	c.Redirect(http.StatusPermanentRedirect, "/chat")
+
 }
