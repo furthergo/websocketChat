@@ -26,7 +26,7 @@ func main() {
 	})
 	// routers
 	router.GET("/api/v1/login", api.Login)
-	router.Any("/api/v1/loginFromHTML", func(c *gin.Context) {
+	router.POST("/api/v1/loginFromHTML", func(c *gin.Context) {
 		w := c.Writer
 		var u models.UserEntity
 		err := c.ShouldBind(&u)
