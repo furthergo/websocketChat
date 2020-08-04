@@ -100,7 +100,7 @@
         $('#messages').append($('<li>').text(data))
       }
     };
-    let socket = new VIL.EngineSocket("ws://http://49.232.19.17/ws/msg", handler);
+    let socket = new VIL.EngineSocket("ws://49.232.19.17/ws/msg", handler);
 
     $('form').submit(function () {
       socket.send($('#m').val());
