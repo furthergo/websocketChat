@@ -39,23 +39,26 @@ func (s *wsChatServer)MessageAPI(c *gin.Context) {
 	if err != nil {
 		logger.Log2file("upgrade failed")
 	}
-	client := s.Accept(conn)
-	s.BroadCast(1, fmt.Sprintf("New User coming in: %v", client.name))
+	client := s.Accept(c, conn)
+	s.BroadCast(1, fmt.Sprintf("New User coming in: %v", client.user.Name))
 	s.lock.Lock()
 	s.clients = append(s.clients, client)
 	s.lock.Unlock()
 	go s.Serve(client)
 }
 
-func (s *wsChatServer)Accept(conn *websocket.Conn) *wsChatClient {
+func (s *wsChatServer)Accept(c *gin.Context, conn *websocket.Conn) *wsChatClient {
+	n := c.Query("username")
+	p := c.Query("password")
+
 	return &wsChatClient{
 		conn: conn,
-		name: conn.RemoteAddr().String(),
+		user:  UserEntity{n, p},
 	}
 }
 
 func (s *wsChatServer)Disconnect(c *wsChatClient) {
-	s.BroadCast(1, fmt.Sprintf("[%v] quit!!!!!!!!!!!!!", c.name))
+	s.BroadCast(1, fmt.Sprintf("[%v] quit!!!!!!!!!!!!!", c.user.Name))
 	s.lock.Lock()
 	for i, cc := range s.clients {
 		if cc == c {
@@ -72,7 +75,7 @@ func (s *wsChatServer)Serve(c *wsChatClient) {
 		if err == io.EOF {
 			s.Disconnect(c)
 			c.conn.Close()
-			logger.Log2file( fmt.Sprintf("%v connect close", c.name))
+			logger.Log2file( fmt.Sprintf("%v connect close", c.user.Name))
 			break
 		}
 		if b == nil {
@@ -88,10 +91,10 @@ func (s *wsChatServer)Serve(c *wsChatClient) {
 		msg := string(b)
 		if strings.HasPrefix(msg, "NAME:") {
 			msg = strings.TrimPrefix(msg, "NAME:")
-			logger.Log2file(fmt.Sprintf("[%v] set new name: [%v]", c.name, msg))
-			c.name = msg
+			logger.Log2file(fmt.Sprintf("[%v] set new name: [%v]", c.user.Name, msg))
+			c.user.Name = msg
 		} else {
-			msg = fmt.Sprintf("[%v](%v): %v", c.name, getFormatTime(), string(b))
+			msg = fmt.Sprintf("[%v](%v): %v", c.user.Name, getFormatTime(), string(b))
 			go s.BroadCast(t, msg)
 		}
 	}

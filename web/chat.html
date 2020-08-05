@@ -7,14 +7,16 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-size: 30px;
     }
     
     body {
       font: 13px Helvetica, Arial;
+      background-color: #cbd3da;
     }
     
     form {
-      background: #000;
+      background-color: #d4edda;
       padding: 3px;
       position: fixed;
       bottom: 0;
@@ -23,24 +25,21 @@
     
     form input {
       border: 0;
-      padding: 10px;
+      padding: 20px;
       width: 90%;
+      margin-left: .5%;
       margin-right: .5%;
+      margin-bottom: 0.5%;
+      font-size: 30px;
     }
 
     form button {
-      width: 9%;
+      width: 20%;
       background: rgb(130, 224, 255);
       border: none;
-      padding: 10px;
-    }
-
-    form2 button {
-      width: 9%;
-      background: rgb(130, 224, 255);
-      border: none;
-      padding: 30px;
-      padding-bottom: 50px;
+      font-size: 40px;
+      height: 60px;
+      margin-bottom: 3%;
     }
     
     #messages {
@@ -80,6 +79,16 @@
     //   $('#m').val('');
     //   return false;
     // }
+    function getParams(key) {
+      var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+      var r = window.location.search.substr(1).match(reg);
+      if (r != null) {
+        return unescape(r[2]);
+      }
+      return null;
+    };
+    console.log("参数param1:"+getParams("username"));//输出aa
+    console.log("参数param2:"+getParams("password"));//输出bb
 
     let isConnect = false;
     let handler = {
@@ -100,26 +109,15 @@
         $('#messages').append($('<li>').text(data))
       }
     };
-    let socket = new VIL.EngineSocket("ws://49.232.19.17/ws/msg", handler);
+    let n = getParams("username")
+    let p = getParams("password")
+    let socket = new VIL.EngineSocket("ws://49.232.19.17/ws/msg?username=" + n + "&password=" + p, handler);
 
     $('form').submit(function () {
       socket.send($('#m').val());
       $('#m').val('');
       return false
     })
-  </script>
-
-  <script type="text/javascript">
-    function getParams(key) {
-      var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
-      var r = window.location.search.substr(1).match(reg);
-      if (r != null) {
-        return unescape(r[2]);
-      }
-      return null;
-    };
-    console.log("参数param1:"+getParams("username"));//输出aa
-    console.log("参数param2:"+getParams("ip"));//输出bb
   </script>
 </body>
 

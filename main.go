@@ -24,23 +24,13 @@ func main() {
 	idx.POST("/chat", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "chat.html", nil)
 	})
-	// routers
-	router.GET("/api/v1/login", api.Login)
-	router.POST("/api/v1/loginFromHTML", func(c *gin.Context) {
-		w := c.Writer
-		var u models.UserEntity
-		err := c.ShouldBind(&u)
-		if err != nil {
-			w.Write([]byte("sorry，user is not allowed"))
-		}
-		res, _ := u.Auth()
-		if !res {
-			w.Write([]byte("sorry，user is not allowed"))
-			return
-		}
-		c.Request.URL.Path = "/chat"
-		router.HandleContext(c)
-	})
+
+	apiV1 := router.Group("/api/v1")
+	{
+		apiV1.GET("/login", api.Login)
+		apiV1.POST("/loginFromHTML", api.LoginFromHtml)
+		apiV1.POST("/registerFromHTML", api.RegisterFromHtml)
+	}
 
 	wsS := models.NewWsChatServer()
 	router.GET("/ws/msg", wsS.MessageAPI)

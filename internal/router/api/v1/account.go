@@ -23,3 +23,22 @@ func Login(c *gin.Context) {
 		return
 	}
 }
+
+func LoginFromHtml(c *gin.Context) {
+	w := c.Writer
+	var u models.UserEntity
+	err := c.ShouldBind(&u)
+	if err != nil {
+		w.Write([]byte("sorry，user is not allowed"))
+	}
+	res, _ := u.Auth()
+	if !res {
+		w.Write([]byte("sorry，user is not allowed"))
+		return
+	}
+	c.Redirect(http.StatusPermanentRedirect,  fmt.Sprintf("/chat?username=%v&password=%v", u.Name, u.Password))
+}
+
+func RegisterFromHtml(c *gin.Context) {
+
+}

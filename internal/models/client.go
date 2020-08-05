@@ -7,7 +7,7 @@ import (
 
 type wsChatClient struct {
 	conn *websocket.Conn
-	name string
+	user UserEntity
 }
 
 func (c *wsChatClient)Write(t int, b []byte) {
