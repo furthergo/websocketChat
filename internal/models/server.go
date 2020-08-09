@@ -50,10 +50,13 @@ func (s *wsChatServer)MessageAPI(c *gin.Context) {
 func (s *wsChatServer)Accept(c *gin.Context, conn *websocket.Conn) *wsChatClient {
 	n := c.Query("username")
 	p := c.Query("password")
-
+	var u UserEntity
+	u.Name = n
+	u.Password = p
+	u.Ip = c.Request.RemoteAddr
 	return &wsChatClient{
 		conn: conn,
-		user:  UserEntity{n, p},
+		user:  u,
 	}
 }
 
