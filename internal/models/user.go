@@ -2,7 +2,7 @@ package models
 
 import (
 	"crypto/sha256"
-	"github.com/futhergo/websocketChat/internal/DB"
+	"github.com/futhergo/websocketChat/internal/pkg/DB"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"

@@ -2,9 +2,9 @@ package api
 
 import (
 	"fmt"
-	"github.com/futhergo/websocketChat/internal/e"
 	"github.com/futhergo/websocketChat/internal/models"
-	"github.com/futhergo/websocketChat/internal/utils"
+	"github.com/futhergo/websocketChat/internal/pkg/e"
+	"github.com/futhergo/websocketChat/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -24,7 +24,7 @@ func Login(c *gin.Context) {
 	if !res {
 		c.JSON(http.StatusOK, gin.H{
 			"code": e.ERROR_AUTH,
-			"msg": "user auth failed",
+			"msg":  "user auth failed",
 		})
 		return
 	}
@@ -34,7 +34,7 @@ func Login(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": e.SUCCESS,
-		"msg": "login success",
+		"msg":  "login success",
 		"data": u.GetMap(),
 	})
 }
@@ -52,7 +52,7 @@ func Register(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": e.INVALID_PARAMS,
-			"msg": "sorry，your input is error, please try again",
+			"msg":  "sorry，your input is error, please try again",
 		})
 		return
 	}
@@ -67,7 +67,7 @@ func Register(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": e.SUCCESS,
-		"msg": "register success",
+		"msg":  "register success",
 		"data": u.GetMap(),
 	})
 }

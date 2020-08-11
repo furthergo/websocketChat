@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/futhergo/websocketChat/internal/DB"
 	"github.com/futhergo/websocketChat/internal/models"
+	"github.com/futhergo/websocketChat/internal/pkg/DB"
+	"github.com/futhergo/websocketChat/internal/pkg/settings"
 	"github.com/futhergo/websocketChat/internal/router/api/v1"
 	logger "github.com/futhergo/websocketChat/log"
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	logger.Log2file("~~~~~~~~~~New Server Start~~~~~~~~~")
-
+	settings.InitSetting()
 	DB.InitDB()
 
 	router := gin.Default()
