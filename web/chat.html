@@ -111,7 +111,7 @@
     };
     let n = getParams("username")
     let p = getParams("password")
-    let socket = new VIL.EngineSocket("ws://49.232.19.17:1111/ws/msg?username=" + n, handler);
+    let socket = new VIL.EngineSocket("ws://127.0.0.1:1111/ws/msg?username=" + n, handler);
 
     var url = window.location.href
     var state = {title:'',url:url};

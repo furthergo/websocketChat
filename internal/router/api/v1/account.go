@@ -58,8 +58,8 @@ func Register(c *gin.Context) {
 	}
 	u.Password = string(hash)
 	u.Ip = c.Request.RemoteAddr
-	u.CreateTime = time.Now()
-	u.ModifyTime = time.Now()
+	u.CreatedAt = time.Now()
+	u.UpdatedAt = time.Now()
 	u.Save()
 	ssid, err := utils.GenerateToken(u.Name, u.Password)
 	if err == nil {
@@ -103,8 +103,8 @@ func RegisterFromHtml(c *gin.Context) {
 	}
 	u.Password = string(hash)
 	u.Ip = c.Request.RemoteAddr
-	u.CreateTime = time.Now()
-	u.ModifyTime = time.Now()
+	u.CreatedAt = time.Now()
+	u.UpdatedAt = time.Now()
 	u.Save()
 	if err == nil {
 		c.SetCookie("session_id", u.Sha256(), 1000, "/", "localhost", false, true)

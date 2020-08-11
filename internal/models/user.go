@@ -3,18 +3,16 @@ package models
 import (
 	"crypto/sha256"
 	"github.com/futhergo/websocketChat/internal/DB"
+	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"time"
 )
 
 type UserEntity struct {
-	Id int64 `gorm:"primary_key" json:"id"`
+	gorm.Model
 	Name string `form:"email" gorm:"column:username" json:"username"`
 	Password string `form:"password" gorm:"column:password" json:"password"`
 	Ip string `gorm:"column:ip" json:"ip"`
-	CreateTime time.Time `json:"create_time"`
-	ModifyTime time.Time `json:"modify_time"`
 }
 
 func (u UserEntity)Auth() (bool, error) {
@@ -41,10 +39,10 @@ func (u UserEntity)Save() {
 
 func (u UserEntity)GetMap() map[string]interface{} {
 	res := make(map[string]interface{})
-	res["id"] = u.Id
+	res["id"] = u.ID
 	res["username"] = u.Name
-	res["create_time"] = u.CreateTime.Unix()
-	res["modify_time"] = u.ModifyTime.Unix()
+	res["created_at"] = u.CreatedAt.Unix()
+	res["updated_at"] = u.UpdatedAt.Unix()
 	res["ip"] = u.Ip
 	return res
 }
