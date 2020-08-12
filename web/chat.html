@@ -87,8 +87,6 @@
       }
       return null;
     };
-    console.log("参数param1:"+getParams("username"));//输出aa
-    console.log("参数param2:"+getParams("password"));//输出bb
 
     let isConnect = false;
     let handler = {
@@ -110,8 +108,8 @@
       }
     };
     let n = getParams("username")
-    let p = getParams("password")
-    let socket = new VIL.EngineSocket("ws://127.0.0.1:1111/ws/msg?username=" + n, handler);
+    let id = getParams("uid")
+    let socket = new VIL.EngineSocket("ws://127.0.0.1:1111/ws/msg?username=" + n + "&uid=" + id, handler);
 
     var url = window.location.href
     var state = {title:'',url:url};

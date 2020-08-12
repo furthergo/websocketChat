@@ -15,7 +15,7 @@ type UserEntity struct {
 	Ip string `gorm:"column:ip" json:"ip"`
 }
 
-func (u UserEntity)Auth() (bool, error) {
+func (u *UserEntity)Auth() (bool, error) {
 	//TODO: register/Login/JWT
 	var uu UserEntity
 	DB.DB.Find(&uu, "username=?", u.Name)
@@ -24,6 +24,7 @@ func (u UserEntity)Auth() (bool, error) {
 		return false, nil
 	}
 	u.Password = uu.Password
+	u.ID = uu.ID
 	return true, nil
 }
 
@@ -55,5 +56,11 @@ func (u UserEntity)Sha256() string {
 }
 
 func (UserEntity)TableName() string {
-	return "user"
+	return "users"
+}
+
+func GetUserById(id uint) (UserEntity, error) {
+	var u UserEntity
+	err := DB.DB.Where("id = ?", id).First(&u).Error
+	return u, err
 }

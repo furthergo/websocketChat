@@ -1,5 +1,5 @@
 {{define "login-form"}}
-	<form action="/api/v1/loginFromHTML" method="post">
+	<form action="/api/v1/user/loginFromHTML" method="post">
 		<div class="form-group">
 			<label for="email">Email</label>
 			<input type="text" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="输入 email">
@@ -14,7 +14,7 @@
 {{end}}
 
 {{define "register-form"}}
-	<form action="/api/v1/registerFromHTML" method="post">
+	<form action="/api/v1/user/registerFromHTML" method="post">
 		<div class="form-group">
 			<label for="email">Email</label>
 			<input type="text" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="输入 email">

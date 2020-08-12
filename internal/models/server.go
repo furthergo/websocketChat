@@ -8,8 +8,9 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"strings"
+	"strconv"
 	"sync"
+	"time"
 )
 
 type wsChatServer struct {
@@ -38,8 +39,13 @@ func (s *wsChatServer)MessageAPI(c *gin.Context) {
 	conn, err := s.upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		logger.Log2file("upgrade failed")
+		return
 	}
-	client := s.Accept(c, conn)
+	client, err := s.Accept(c, conn)
+	if err != nil {
+		logger.Log2file("parse user id failed")
+		return
+	}
 	s.BroadCast(1, fmt.Sprintf("New User coming in: %v", client.user.Name))
 	s.lock.Lock()
 	s.clients = append(s.clients, client)
@@ -47,17 +53,20 @@ func (s *wsChatServer)MessageAPI(c *gin.Context) {
 	go s.Serve(client)
 }
 
-func (s *wsChatServer)Accept(c *gin.Context, conn *websocket.Conn) *wsChatClient {
-	n := c.Query("username")
-	p := c.Query("password")
-	var u UserEntity
-	u.Name = n
-	u.Password = p
-	u.Ip = c.Request.RemoteAddr
+func (s *wsChatServer)Accept(c *gin.Context, conn *websocket.Conn) (*wsChatClient, error) {
+	id, err := strconv.ParseUint(c.Query("uid"), 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	u, err := GetUserById(uint(id))
+	if err != nil {
+		return nil, err
+	}
+	u.Ip = conn.RemoteAddr().String()
 	return &wsChatClient{
 		conn: conn,
 		user:  u,
-	}
+	}, nil
 }
 
 func (s *wsChatServer)Disconnect(c *wsChatClient) {
@@ -73,6 +82,13 @@ func (s *wsChatServer)Disconnect(c *wsChatClient) {
 }
 
 func (s *wsChatServer)Serve(c *wsChatClient) {
+	go func() {
+		historyMsgs := AllMessages()
+		for _, m := range historyMsgs {
+			c.WriteMessage(m)
+		}
+	}()
+
 	for {
 		t, b, err := c.conn.ReadMessage()
 		if err == io.EOF {
@@ -92,14 +108,15 @@ func (s *wsChatServer)Serve(c *wsChatClient) {
 			logger.Log2file(err)
 		}
 		msg := string(b)
-		if strings.HasPrefix(msg, "NAME:") {
-			msg = strings.TrimPrefix(msg, "NAME:")
-			logger.Log2file(fmt.Sprintf("[%v] set new name: [%v]", c.user.Name, msg))
-			c.user.Name = msg
-		} else {
-			msg = fmt.Sprintf("[%v](%v): %v", c.user.Name, getFormatTime(), string(b))
-			go s.BroadCast(t, msg)
+		m := Message{
+			FromUid: c.user.ID,
+			FromName: c.user.Name,
+			Content: msg,
+			SendTime: time.Now(),
+			SendStatus: 1,
 		}
+		m.Save()
+		go s.BroadCast(t, m.FormatString())
 	}
 }
 

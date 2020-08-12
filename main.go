@@ -4,46 +4,20 @@ import (
 	"github.com/futhergo/websocketChat/internal/models"
 	"github.com/futhergo/websocketChat/internal/pkg/DB"
 	"github.com/futhergo/websocketChat/internal/pkg/settings"
-	"github.com/futhergo/websocketChat/internal/router/api/v1"
+	"github.com/futhergo/websocketChat/internal/router"
 	logger "github.com/futhergo/websocketChat/log"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func main() {
 	logger.Log2file("~~~~~~~~~~New Server Start~~~~~~~~~")
 	settings.InitSetting()
 	DB.InitDB()
+	router.InitRoutes()
 
-	router := gin.Default()
-	router.LoadHTMLGlob("web/*")
-	router.Static("/statics", "./statics")
-	idx := router.Group("/")
-	idx.Any("", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title": "Welcome to my WebSocket Chat~~",
-			"subtitle": "You can use name `test` and password `test` to login, have a good day!",
-		})
-	})
-	idx.Any("/chat", /*middleware.Cookies(), */func(c *gin.Context) {
-		u := models.UserEntity{
-			Name: c.Query("username"),
-		}
-		c.SetCookie("session_id", u.Sha256(), 1000, "/", ":", false, true)
-		c.HTML(http.StatusOK, "chat.html", nil)
-	})
-
-	apiV1 := router.Group("/api/v1")
-	{
-		apiV1.GET("/user/login", api.Login)
-		apiV1.GET("/user/resister", api.Register)
-		apiV1.POST("/loginFromHTML", api.LoginFromHtml)
-		apiV1.POST("/registerFromHTML", api.RegisterFromHtml)
+	if !DB.DB.HasTable(&models.UserEntity{}) {
+		DB.DB.Create(&models.UserEntity{})
 	}
-
-	wsS := models.NewWsChatServer()
-	router.GET("/ws/msg", wsS.MessageAPI)
-
-	//start http server
-	router.Run(":1111")
+	if !DB.DB.HasTable(&models.Message{}) {
+		DB.DB.Create(&models.Message{})
+	}
 }
