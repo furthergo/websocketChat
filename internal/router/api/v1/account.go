@@ -92,7 +92,7 @@ func LoginFromHtml(c *gin.Context) {
 
 func RegisterFromHtml(c *gin.Context) {
 	w := c.Writer
-	var u models.UserEntity
+	var u *models.UserEntity
 	err := c.ShouldBind(&u)
 	if err != nil {
 		w.Write([]byte("sorry，your input is error"))
@@ -109,5 +109,5 @@ func RegisterFromHtml(c *gin.Context) {
 	if err == nil {
 		c.SetCookie("session_id", u.Sha256(), 1000, "/", "localhost", false, true)
 	}
-	c.Redirect(http.StatusPermanentRedirect,  fmt.Sprintf("/chat?username=%v", u.Name))
+	c.Redirect(http.StatusPermanentRedirect,  fmt.Sprintf("/chat?username=%v&uid=%v", u.Name, u.ID))
 }

@@ -15,7 +15,7 @@ func InitRoutes() {
 	idx.Any("", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Welcome to my WebSocket Chat~~",
-			"subtitle": "You can use name `test` and password `test` to login, have a good day!",
+			"subtitle": "Have a good day!（haocheng SB）",
 		})
 	})
 	idx.Any("/chat", /*middleware.Cookies(), */func(c *gin.Context) {

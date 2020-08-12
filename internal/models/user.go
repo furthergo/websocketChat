@@ -34,7 +34,7 @@ func (u UserEntity)AddAsQuery(r *http.Request) string {
 	return q.Encode()
 }
 
-func (u UserEntity)Save() {
+func (u *UserEntity)Save() {
 	DB.DB.Create(&u)
 }
 
